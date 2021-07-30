@@ -80,6 +80,25 @@ export const getCurrentUser = () => {
   });
 };
 
+export const getUserCartRef = async (userId) => {
+  const cartRef = firestore
+    .collection("carts")
+    .where("userId", "==", userId)
+    .limit(1);
+  const snapshot = await cartRef.get();
+
+  if (snapshot.empty) {
+    const cartDocRef = firestore.collection("carts").doc();
+    cartDocRef.set({
+      userId,
+      cartItems: [],
+    });
+    return cartDocRef;
+  } else {
+    return snapshot.docs[0].ref;
+  }
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();
